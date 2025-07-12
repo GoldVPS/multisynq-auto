@@ -66,8 +66,11 @@ function check_performance() {
     echo -e "${CYAN}Launching Web Dashboard...${RESET}"
     synchronize web &
     sleep 2
+
+    PUBLIC_IP=$(curl -s ifconfig.me || echo "<your_vps_ip>")
+
     echo -e "${GREEN}✔ Web dashboard started. Open in browser:${RESET}"
-    echo -e "${CYAN}→ http://<your_vps_ip>:3000${RESET}"
+    echo -e "${CYAN}→ http://$PUBLIC_IP:3000${RESET}"
     echo ""
     echo -e "${GREEN}✔ Your node is running inside screen session: ${YELLOW}multisynq${RESET}"
     echo -e "${CYAN}To view logs, run: ${GREEN}screen -r multisynq${RESET}"
