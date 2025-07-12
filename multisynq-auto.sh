@@ -63,18 +63,22 @@ function install_and_run() {
 
 # === Check Performance Function ===
 function check_performance() {
+    PUBLIC_IP=$(curl -s ipv4.icanhazip.com || echo "<your_vps_ip>")
+
     echo -e "${CYAN}Launching Web Dashboard...${RESET}"
-    synchronize web &
-    sleep 2
+    synchronize web > /dev/null 2>&1 &
 
-    PUBLIC_IP=$(curl -s ifconfig.me || echo "<your_vps_ip>")
+    sleep 2  # kasih delay biar proses start
 
-    echo -e "${GREEN}✔ Web dashboard started. Open in browser:${RESET}"
-    echo -e "${CYAN}→ http://$PUBLIC_IP:3000${RESET}"
+    echo -e "${GREEN}✔ Web dashboard started.${RESET}"
+    echo -e "${YELLOW}🌐 Open in browser:${RESET} ${CYAN}http://$PUBLIC_IP:3000${RESET}"
+    echo -e "${YELLOW}📊 Metrics: ${RESET}${CYAN}http://$PUBLIC_IP:3001/metrics${RESET}"
+    echo -e "${YELLOW}❤️ Health Check: ${RESET}${CYAN}http://$PUBLIC_IP:3001/health${RESET}"
     echo ""
     echo -e "${GREEN}✔ Your node is running inside screen session: ${YELLOW}multisynq${RESET}"
     echo -e "${CYAN}To view logs, run: ${GREEN}screen -r multisynq${RESET}"
     echo ""
+    read -p "🔙 Press Enter to return to the main menu..."
 }
 
 # === Main Menu ===
