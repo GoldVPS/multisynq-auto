@@ -75,23 +75,29 @@ function check_and_open_ports() {
 
 # === Check Performance Function ===
 function check_performance() {
+    if ! docker ps | grep -q "synchronizer"; then
+        echo -e "${RED}❌ No synchronizer container running. Please run Option 1 first.${RESET}"
+        read -p "🔙 Press Enter to return to the main menu..."
+        return
+    fi
+
     PUBLIC_IP=$(curl -s ipv4.icanhazip.com || echo "<your_vps_ip>")
 
     echo -e "${CYAN}Launching Web Dashboard...${RESET}"
-    check_and_open_ports
-
-    synchronize web > /root/multisynq-web.log 2>&1 &
+    synchronize web > /dev/null 2>&1 &
 
     sleep 2
 
     echo -e "${GREEN}✔ Web dashboard started.${RESET}"
-    echo -e "${YELLOW}🌐 Open in browser:${RESET} ${CYAN}http://$PUBLIC_IP:3000${RESET}"
-    echo -e "${YELLOW}📊 Metrics: ${RESET}${CYAN}http://$PUBLIC_IP:3001/metrics${RESET}"
-    echo -e "${YELLOW}❤️ Health Check: ${RESET}${CYAN}http://$PUBLIC_IP:3001/health${RESET}"
+    echo -e "${YELLOW}🌐 Dashboard: ${CYAN}http://$PUBLIC_IP:3000${RESET}"
+    echo -e "${YELLOW}📊 Metrics:   ${CYAN}http://$PUBLIC_IP:3001/metrics${RESET}"
+    echo -e "${YELLOW}❤️ Health:    ${CYAN}http://$PUBLIC_IP:3001/health${RESET}"
     echo ""
     echo -e "${GREEN}✔ Your node is running inside screen session: ${YELLOW}multisynq${RESET}"
-    echo -e "${CYAN}To view node logs: ${GREEN}screen -r multisynq${RESET}"
-    echo -e "${CYAN}To view dashboard logs: ${GREEN}cat /root/multisynq-web.log${RESET}"
+    echo -e "${CYAN}To view logs, run: ${GREEN}screen -r multisynq${RESET}"
+    echo ""
+    echo -e "${YELLOW}ℹ️  Note: Dashboard will stop if you close this terminal.${RESET}"
+    echo -e "${YELLOW}👉 Use Option 3 to enable auto-start after reboot.${RESET}"
     echo ""
     read -p "🔙 Press Enter to return to the main menu..."
 }
@@ -119,9 +125,9 @@ function enable_web_service() {
 while true; do
     show_header
     echo -e "${BLUE_LINE}"
-    echo -e "  ${GREEN}1.${RESET} Install and Run Multisynq Node"
-    echo -e "  ${GREEN}2.${RESET} Check Node Performance (Web Dashboard)"
-    echo -e "  ${GREEN}3.${RESET} Enable Auto-Start Web Dashboard (Systemd)"
+    echo -e "  ${GREEN}1.${RESET} Install & Start Node"
+    echo -e "  ${GREEN}2.${RESET} Open Web Dashboard ${YELLOW}(manual start)${RESET}"
+    echo -e "  ${GREEN}3.${RESET} Enable Auto-Start Dashboard ${YELLOW}(systemd)${RESET}"
     echo -e "  ${GREEN}4.${RESET} Exit"
     echo -e "${BLUE_LINE}"
     read -p "Select an option (1–4): " choice
