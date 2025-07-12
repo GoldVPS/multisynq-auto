@@ -58,29 +58,42 @@ function install_and_run() {
     echo ""
 }
 
-# === Menu ===
-function show_menu() {
-    echo -e "${YELLOW}Please select an option:${RESET}"
-    echo "1) Install and Run Multisynq Node"
-    echo "2) Exit"
+# === Check Performance Function ===
+function check_performance() {
+    echo -e "${CYAN}Launching Web Dashboard...${RESET}"
+    synchronize web &
+    sleep 2
+    echo -e "${GREEN}✔ Web dashboard started. Open in browser:${RESET}"
+    echo -e "${CYAN}http://<your_vps_ip>:3000${RESET}"
     echo ""
-    read -p "Enter your choice [1-2]: " choice
+}
+
+# === Menu ===
+while true; do
+    show_header
+    echo -e "${BLUE_LINE}"
+    echo -e "  ${GREEN}1.${RESET} Install and Run Multisynq Node"
+    echo -e "  ${GREEN}2.${RESET} Check Node Performance (Web Dashboard)"
+    echo -e "  ${GREEN}3.${RESET} Exit"
+    echo -e "${BLUE_LINE}"
+    read -p "Select an option (1–3): " choice
 
     case $choice in
         1)
             install_and_run
+            read -p "Press Enter to return to the main menu..."
             ;;
         2)
+            check_performance
+            read -p "Press Enter to return to the main menu..."
+            ;;
+        3)
             echo -e "${RED}Exiting...${RESET}"
             exit 0
             ;;
         *)
-            echo -e "${RED}Invalid choice. Try again.${RESET}"
-            show_menu
+            echo -e "${RED}Invalid choice. Please try again.${RESET}"
+            sleep 1
             ;;
     esac
-}
-
-# === Run ===
-show_header
-show_menu
+done
