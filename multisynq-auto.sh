@@ -106,17 +106,31 @@ function check_performance() {
 function enable_web_service() {
     echo -e "${CYAN}Setting up Web Dashboard as a systemd service...${RESET}"
 
-    if [ -f /root/synchronizer-cli/synchronizer-cli-web.service ]; then
-        sudo cp /root/synchronizer-cli/synchronizer-cli-web.service /etc/systemd/system/
-        sudo systemctl daemon-reload
-        sudo systemctl enable synchronizer-cli-web
-        sudo systemctl start synchronizer-cli-web
-        echo -e "${GREEN}✔ Web Dashboard service installed and started successfully!${RESET}"
-        echo -e "${YELLOW}🌐 Access it at: ${CYAN}http://$(curl -s ipv4.icanhazip.com):3000${RESET}"
-    else
-        echo -e "${RED}❌ Service file not found. Please launch Web Dashboard at least once using Option 2 first.${RESET}"
-    fi
+    SERVICE_PATH="/etc/systemd/system/synchronizer-cli-web.service"
 
+    # Buat file systemd manual
+    cat <<EOF > $SERVICE_PATH
+[Unit]
+Description=Synchronizer Web Dashboard
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+User=root
+ExecStart=$(which synchronize) web
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable synchronizer-cli-web
+    sudo systemctl start synchronizer-cli-web
+
+    echo -e "${GREEN}✔ Web Dashboard service installed and started successfully!${RESET}"
+    echo -e "${YELLOW}🌐 Access it at: ${CYAN}http://$(curl -s ipv4.icanhazip.com):3000${RESET}"
     echo ""
     read -p "🔙 Press Enter to return to the main menu..."
 }
