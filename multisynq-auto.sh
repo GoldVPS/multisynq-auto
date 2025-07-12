@@ -61,14 +61,28 @@ function install_and_run() {
     echo ""
 }
 
+# === Check & Open Required Ports ===
+function check_and_open_ports() {
+    for port in 3000 3001; do
+        if ! ufw status | grep -q "$port/tcp"; then
+            echo -e "${YELLOW}🔓 Port $port not open. Opening now...${RESET}"
+            ufw allow "$port"/tcp > /dev/null 2>&1 || true
+        else
+            echo -e "${GREEN}✅ Port $port already open.${RESET}"
+        fi
+    done
+}
+
 # === Check Performance Function ===
 function check_performance() {
     PUBLIC_IP=$(curl -s ipv4.icanhazip.com || echo "<your_vps_ip>")
 
     echo -e "${CYAN}Launching Web Dashboard...${RESET}"
-    synchronize web > /dev/null 2>&1 &
+    check_and_open_ports
 
-    sleep 2  # kasih delay biar proses start
+    synchronize web > /root/multisynq-web.log 2>&1 &
+
+    sleep 2
 
     echo -e "${GREEN}✔ Web dashboard started.${RESET}"
     echo -e "${YELLOW}🌐 Open in browser:${RESET} ${CYAN}http://$PUBLIC_IP:3000${RESET}"
@@ -76,7 +90,8 @@ function check_performance() {
     echo -e "${YELLOW}❤️ Health Check: ${RESET}${CYAN}http://$PUBLIC_IP:3001/health${RESET}"
     echo ""
     echo -e "${GREEN}✔ Your node is running inside screen session: ${YELLOW}multisynq${RESET}"
-    echo -e "${CYAN}To view logs, run: ${GREEN}screen -r multisynq${RESET}"
+    echo -e "${CYAN}To view node logs: ${GREEN}screen -r multisynq${RESET}"
+    echo -e "${CYAN}To view dashboard logs: ${GREEN}cat /root/multisynq-web.log${RESET}"
     echo ""
     read -p "🔙 Press Enter to return to the main menu..."
 }
