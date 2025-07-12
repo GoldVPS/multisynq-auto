@@ -25,6 +25,19 @@ function show_header() {
     echo ""
 }
 
+# === Ensure UFW Installed and Active ===
+function ensure_ufw_ready() {
+    if ! command -v ufw &>/dev/null; then
+        echo -e "${YELLOW}⚙️ UFW not found. Installing...${RESET}"
+        apt-get install -y ufw
+    fi
+
+    if ! ufw status | grep -q "Status: active"; then
+        echo -e "${YELLOW}🚀 Enabling UFW firewall...${RESET}"
+        ufw --force enable
+    fi
+}
+
 # === Installation Function ===
 function install_and_run() {
     echo -e "${CYAN}Step 1: Installation & Configuration...${RESET}"
@@ -51,14 +64,13 @@ function install_and_run() {
     echo -e "${CYAN}To view logs, run: ${GREEN}screen -r multisynq${RESET}"
 
     echo -e "${YELLOW}✔ Opening necessary ports via UFW...${RESET}"
-    if command -v ufw &>/dev/null; then
-        ufw allow 22/tcp > /dev/null 2>&1 || true
-        ufw allow 3000/tcp > /dev/null 2>&1 || true
-        echo -e "${GREEN}✔ Ports 22 (SSH) and 3000 (Web) opened successfully.${RESET}"
-    else
-        echo -e "${RED}⚠️ UFW not found, please open ports 22 and 3000 manually if needed.${RESET}"
-    fi
+    ensure_ufw_ready
+    ufw allow 22/tcp > /dev/null 2>&1 || true
+    ufw allow 3333/tcp > /dev/null 2>&1 || true
+    echo -e "${GREEN}✔ Ports 22 and 3333 opened successfully.${RESET}"
+
     echo ""
+    read -p "🔙 Press Enter to return to the main menu..."
 }
 
 # === Check & Open Required Ports ===
@@ -85,6 +97,9 @@ function check_performance() {
 
     echo -e "${CYAN}Launching Web Dashboard...${RESET}"
     synchronize web > /dev/null 2>&1 &
+
+    # Pastikan port dashboard dibuka
+    check_and_open_ports
 
     sleep 2
 
