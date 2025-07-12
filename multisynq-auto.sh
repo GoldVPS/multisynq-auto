@@ -24,8 +24,8 @@ function show_header() {
     echo ""
 }
 
-# === Step 1: Installation & Configuration ===
-function install_and_configure() {
+# === Installation Function ===
+function install_and_run() {
     echo -e "${CYAN}Step 1: Installation & Configuration...${RESET}"
     
     echo -e "${YELLOW}✔ Installing Node.js (v18 LTS)...${RESET}"
@@ -44,35 +44,42 @@ function install_and_configure() {
     echo -e "${YELLOW}✔ Running synchronize init...${RESET}"
     synchronize init
 
-    echo -e "${GREEN}✅ Installation & configuration complete.${RESET}"
+    echo -e "${GREEN}✅ Installation complete.${RESET}"
     echo ""
-}
 
-# === Step 2: Start Synchronizer Container ===
-function start_synchronizer() {
-    echo -e "${CYAN}Step 2: Starting Synchronizer Container...${RESET}"
-
-    echo -e "${YELLOW}✔ Creating screen session 'multisynq'...${RESET}"
+    echo -e "${CYAN}Step 2: Starting Synchronizer in screen...${RESET}"
     screen -dmS multisynq bash -c "synchronize start"
+    echo -e "${GREEN}✔ Node is running inside screen session 'multisynq'${RESET}"
 
-    echo -e "${GREEN}✅ Synchronizer started inside 'multisynq' screen session.${RESET}"
+    echo -e "${CYAN}Step 3: Access Web Dashboard${RESET}"
+    echo -e "Run: ${GREEN}synchronize web${RESET}"
+    echo -e "Then open: ${CYAN}http://<your_vps_ip>:3000${RESET}"
     echo ""
 }
 
-# === Step 3: Check Web Dashboard ===
-function show_dashboard_info() {
-    echo -e "${CYAN}Step 3: Check Web Dashboard...${RESET}"
-    echo -e "${YELLOW}✔ You can view performance dashboard via:${RESET}"
-    echo -e "${GREEN}synchronize web${RESET}"
-    echo -e "${YELLOW}Then open your browser and visit:${RESET}"
-    echo -e "${CYAN}http://<your_vps_ip>:3000${RESET}"
+# === Menu ===
+function show_menu() {
+    echo -e "${YELLOW}Please select an option:${RESET}"
+    echo "1) Install and Run Multisynq Node"
+    echo "2) Exit"
     echo ""
+    read -p "Enter your choice [1-2]: " choice
+
+    case $choice in
+        1)
+            install_and_run
+            ;;
+        2)
+            echo -e "${RED}Exiting...${RESET}"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Invalid choice. Try again.${RESET}"
+            show_menu
+            ;;
+    esac
 }
 
-# === Run All Steps ===
+# === Run ===
 show_header
-install_and_configure
-start_synchronizer
-show_dashboard_info
-
-echo -e "${GREEN}🎉 Done! Your Multisynq Node is up and running.${RESET}"
+show_menu
