@@ -45,16 +45,19 @@ function install_and_run() {
     echo -e "${YELLOW}✔ Running synchronize init...${RESET}"
     synchronize init
 
-    echo -e "${GREEN}✅ Installation complete.${RESET}"
-    echo ""
-
     echo -e "${CYAN}Step 2: Starting Synchronizer in screen...${RESET}"
     screen -dmS multisynq bash -c "synchronize start"
-    echo -e "${GREEN}✔ Node is running inside screen session 'multisynq'${RESET}"
+    echo -e "${GREEN}✔ Node is now running in screen session named: ${YELLOW}multisynq${RESET}"
+    echo -e "${CYAN}To view logs, run: ${GREEN}screen -r multisynq${RESET}"
 
-    echo -e "${CYAN}Step 3: Access Web Dashboard${RESET}"
-    echo -e "Run: ${GREEN}synchronize web${RESET}"
-    echo -e "Then open: ${CYAN}http://<your_vps_ip>:3000${RESET}"
+    echo -e "${YELLOW}✔ Opening necessary ports via UFW...${RESET}"
+    if command -v ufw &>/dev/null; then
+        ufw allow 22/tcp > /dev/null 2>&1 || true
+        ufw allow 3000/tcp > /dev/null 2>&1 || true
+        echo -e "${GREEN}✔ Ports 22 (SSH) and 3000 (Web) opened successfully.${RESET}"
+    else
+        echo -e "${RED}⚠️ UFW not found, please open ports 22 and 3000 manually if needed.${RESET}"
+    fi
     echo ""
 }
 
@@ -64,11 +67,14 @@ function check_performance() {
     synchronize web &
     sleep 2
     echo -e "${GREEN}✔ Web dashboard started. Open in browser:${RESET}"
-    echo -e "${CYAN}http://<your_vps_ip>:3000${RESET}"
+    echo -e "${CYAN}→ http://<your_vps_ip>:3000${RESET}"
+    echo ""
+    echo -e "${GREEN}✔ Your node is running inside screen session: ${YELLOW}multisynq${RESET}"
+    echo -e "${CYAN}To view logs, run: ${GREEN}screen -r multisynq${RESET}"
     echo ""
 }
 
-# === Menu ===
+# === Main Menu ===
 while true; do
     show_header
     echo -e "${BLUE_LINE}"
