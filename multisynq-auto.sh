@@ -100,8 +100,8 @@ function check_performance() {
 while true; do
     show_header
     echo -e "${BLUE_LINE}"
-    echo -e "  ${GREEN}1.${RESET} Install and Run Multisynq Node"
-    echo -e "  ${GREEN}2.${RESET} Check Node Performance (Web Dashboard)"
+    echo -e "  ${GREEN}1.${RESET} Install & Run Node"
+    echo -e "  ${GREEN}2.${RESET} Launch Web Dashboard"
     echo -e "  ${GREEN}3.${RESET} Exit"
     echo -e "${BLUE_LINE}"
     read -p "Select an option (1–3): " choice
