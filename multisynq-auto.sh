@@ -96,26 +96,47 @@ function check_performance() {
     read -p "🔙 Press Enter to return to the main menu..."
 }
 
+# === Enable Web Dashboard as Service ===
+function enable_web_service() {
+    echo -e "${CYAN}Setting up Web Dashboard as a systemd service...${RESET}"
+
+    if [ -f /root/synchronizer-cli/synchronizer-cli-web.service ]; then
+        sudo cp /root/synchronizer-cli/synchronizer-cli-web.service /etc/systemd/system/
+        sudo systemctl daemon-reload
+        sudo systemctl enable synchronizer-cli-web
+        sudo systemctl start synchronizer-cli-web
+        echo -e "${GREEN}✔ Web Dashboard service installed and started successfully!${RESET}"
+        echo -e "${YELLOW}🌐 Access it at: ${CYAN}http://$(curl -s ipv4.icanhazip.com):3000${RESET}"
+    else
+        echo -e "${RED}❌ Service file not found. Please launch Web Dashboard at least once using Option 2 first.${RESET}"
+    fi
+
+    echo ""
+    read -p "🔙 Press Enter to return to the main menu..."
+}
+
 # === Main Menu ===
 while true; do
     show_header
     echo -e "${BLUE_LINE}"
-    echo -e "  ${GREEN}1.${RESET} Install & Run Node"
-    echo -e "  ${GREEN}2.${RESET} Launch Web Dashboard"
-    echo -e "  ${GREEN}3.${RESET} Exit"
+    echo -e "  ${GREEN}1.${RESET} Install and Run Multisynq Node"
+    echo -e "  ${GREEN}2.${RESET} Check Node Performance (Web Dashboard)"
+    echo -e "  ${GREEN}3.${RESET} Enable Auto-Start Web Dashboard (Systemd)"
+    echo -e "  ${GREEN}4.${RESET} Exit"
     echo -e "${BLUE_LINE}"
-    read -p "Select an option (1–3): " choice
+    read -p "Select an option (1–4): " choice
 
     case $choice in
         1)
             install_and_run
-            read -p "Press Enter to return to the main menu..."
             ;;
         2)
             check_performance
-            read -p "Press Enter to return to the main menu..."
             ;;
         3)
+            enable_web_service
+            ;;
+        4)
             echo -e "${RED}Exiting...${RESET}"
             exit 0
             ;;
